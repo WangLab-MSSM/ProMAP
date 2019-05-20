@@ -11,7 +11,7 @@ Weiping Ma<sup>1#</sup>, Sung Won Han<sup>2</sup>, Hua Zhong<sup>3</sup>, and Pe
 
 <sup>2</sup>Korea University (Korea)
 
-<sup>1</sup>New York University (USA)
+<sup>3</sup>New York University (USA)
 
 <sup>#</sup>Maintainer: weiping.ma@mssm.edu
 
