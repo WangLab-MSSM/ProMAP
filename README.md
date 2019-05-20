@@ -22,5 +22,5 @@ A Regularized Linear Mixed Effect Model to construct multi-omics regulatory netw
 
 ## Installation
 ```
-install_github("WangLab-MSSM/iJRFNet/Code")
+install_github("WangLab-MSSM/ProMAP/Code")
 ```
