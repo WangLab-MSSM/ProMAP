@@ -1,0 +1,10 @@
+Package: ProMAP
+Type: Package
+Title: A Regularized Linear Mixed Effect Model (Mixed remMap)
+Version: 1.0
+Date: 2015-09-05
+Author: Weiping Ma <weiping.ma@mssm.edu>, Sung Won Han <sungwonhan2@gmail.com>, Hua Zhong <Judy.Zhong@nyumc.org>, Pei Wang <pei.wang@mssm.edu>
+Maintainer: Pei Wang <pei.wang@mssm.edu>
+Description: R function for a regularized linear mixed effect model for hub networks
+License: GPL-2
+Packaged: 2015-09-29 19:01:50 UTC; hans03
