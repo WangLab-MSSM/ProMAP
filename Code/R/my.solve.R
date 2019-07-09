@@ -1,5 +1,6 @@
 my.solve <-
 function(X){
+
   if (!is.matrix(X))  X <- matrix(X, nrow=sqrt(length(X)))
   Xinv<-ginv(X)
   return(Xinv)

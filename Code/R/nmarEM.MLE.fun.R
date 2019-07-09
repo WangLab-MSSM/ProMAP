@@ -94,18 +94,34 @@ function(Ym, Xm,Zm, gamma0=0, gamma1, lambda1, lambda2, lambda3, lambda4, C.m, m
   data.raw = list(Y.new);
   names(data.raw) = 'x';
   data.raw$y = rep(1:n,K)[apply(!is.na(Y.new0),1,sum)!=0];
-  Y.new2 = pamr.knnimpute(data.raw ,k = 10, rowmax = 0.8, colmax = 0.8);
-  Y.impu = Y.new2$x;
+#   Y.new2 = pamr.knnimpute(data.raw ,k = 10, rowmax = 0.8, colmax = 0.8);
+  Y.new2 = impute.knn(data ,k = 10, rowmax = 0.9, colmax = 0.9, maxp = 1500);
+
+  Y.impu = Y.new2$data;
+  
+  for(l in 1:L)
+  {
+    Y.temp = rep(NA,n*K);  
+    Y.temp[apply(!is.na(Y.new0),1,sum)!=0] = Y.impu[,l];
+    Y.temp = matrix(Y.temp,n,K);
+    SIG.l = cov(Y.temp, use = "pairwise.complete.obs");
+    ### SIG.l sample covariance matrix
+    
+    delta2.l = max(mean(SIG.l[upper.tri(SIG.l)]), ep);
+    ### delta2.l average covariance     
+    
+    D.l = diag(delta2.l, Q);
+    D[,,l] = D.l;
+    
+  }
   
   proc.time();
   
   c0 = C.m;
   c0[C.m==1]=0;  
   
-  rm.temp = remMap(X.new,Y.impu,lamL1 = lambda1 ,lamL2 =lambda2 , C.m = c0);
+  rm.temp = remMap(X.new, Y.impu, lamL1 = lambda1 ,lamL2 =lambda2 , C.m = c0);
   
-
-
 #   rm.temp0 = remMap(X.new,Y.impu,lamL1 = lambda1 ,lamL2 =lambda2 , C.m = c0);
 #   rm.temp = remMap(X.new,Y.impu,lamL1 = lambda1 ,lamL2 =lambda2 , phi0=rm.temp0[[1]], C.m = C.temp);
 
@@ -117,24 +133,6 @@ function(Ym, Xm,Zm, gamma0=0, gamma1, lambda1, lambda2, lambda3, lambda4, C.m, m
   res.ini = matrix(NA,n*K,L);
   res.ini[apply(!is.na(Y.new0),1,sum)!=0,] = Y.impu-X.new%*%alpha.ini;
   res.ini = array(res.ini,dim=c(n,K,L));
-
-  
-  for(l in 1:L)
-  {
-#     Y.temp = rep(NA,n*K);  
-    #     Y.temp[apply(!is.na(Y.new0),1,sum)!=0] = Y.impu[,l];
-#     Y.temp = matrix(Y.temp,n,K);
-    Y.temp = res.ini[,,L];
-    SIG.l = cov(Y.temp, use = "pairwise.complete.obs");
-    ### SIG.l sample covariance matrix
-    
-    delta2.l = max(mean(SIG.l[upper.tri(SIG.l)]), ep);
-    ### delta2.l average covariance     
-    
-    D.l = diag(delta2.l, Q);
-    D[,,l] = D.l;
-    
-  }
   # var.ini = apply(res.ini,c(2),function(x){var(c(x))});
   var.ini = sapply(apply(res.ini,c(2),function(x){var(c(x),na.rm=TRUE)})-mean(D),function(x){max(x,ep)});  
   

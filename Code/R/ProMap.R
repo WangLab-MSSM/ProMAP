@@ -1,61 +1,21 @@
 ProMap <-
-function(X.data, Y.data, num.channel, index.experiment, index.reference, lambda.1=lambda.1, lambda.2=lambda.2, nu.1=nu.1, nu.2=nu.2, V=V, CV.fold=CV.fold, max.iteration = max.iteration , C.matrix=NULL, tolerance=tolerance )
+function(X.data, Y.data, num.channel , lambda.1=lambda.1, lambda.2=lambda.2, nu.1=nu.1, nu.2=nu.2, CV.i=CV.i, CV.all=CV.all, max.teration = max.teration , C.matrix=NULL, tolerance=tolerance ,seed.CV = 1234)
 {
 # lambda.1: lambda_1
 # lambda.2: lambda_2
 # nu.1: nu_1
 # nu.2: nu_2
-# CV.fold : CV. fold
+# CV.i : current cv fold
+# CV.all : total cv folds
 # It: the maximum number of iteration
+
 
 K = num.channel;
 n = dim(Y.data)[1]/K;
 
-
-## check step 1: sample numbers in X and Y and index should be equal
-if(  ((dim(X.data)[1]==dim(Y.data)[1])+(dim(Y.data)[1]==length(index.experiment))+(dim(Y.data)[1]==length(index.reference)))!=3 )
-   {
-    stop("Dimension of data variables disagree.");
-   }
-
-## check step 2: index.experiment should be the same set as ( rep(1:num.channel,dim(Y.data)[1]) )
-if( !identical(rep(1:n,each = K) , sort(index.experiment)) )
-   {
-    stop("Experiment index is incorrect.");
-   }
-
-## check step 3: index.reference[!is.na(index.reference)] should be the same set as 1:dim(Y.data)[1]??
-if( !identical(1:n, sort(index.reference[!is.na(index.reference)] )) )
-   {
-    stop("Reference index is incorrect.");
-   }
-
-## check step 4: index.reference[!is.na(index.reference)] should be the same set as??index.experiment[!is.na(index.reference)]
-if( !identical(index.experiment[!is.na(index.reference)] , index.reference[!is.na(index.reference)]) ) 
-   {
-    stop("Reference index and experiment index disagree.");
-   }
-
-
-if( CV.fold>V) 
-{
-  stop("Invalid CV fold.");
-}
-
-
-index.temp <- index.experiment-(!is.na(index.reference))/100;
-### in this step we make reference a little bit different than the regular channels so that when we sort them we can always let the reference to be the first one in the experiment.
-
-order.sample = c(t(matrix(order(index.temp),num.channel)));
-
-X.array = array(as.matrix(X.data[order.sample,]),dim = c(n,K,dim(X.data)[2]));
-Y.array = array(as.matrix(Y.data[order.sample,]),dim = c(n,K,dim(Y.data)[2]));
-
-
-
 # Change data format
-#X.array = array(as.matrix(X.data),dim = c(n,K,dim(X.data)[2]));
-#Y.array = array(as.matrix(Y.data),dim = c(n,K,dim(Y.data)[2]));
+X.array = array(as.matrix(X.data),dim = c(n,K,dim(X.data)[2]));
+Y.array = array(as.matrix(Y.data),dim = c(n,K,dim(Y.data)[2]));
 
 
 ########################
@@ -68,11 +28,11 @@ L = dim(Y.array)[3];
 K = dim(Y.array)[2];
 n = dim(Y.array)[1];
 
-seed.temp = 1111;
-set.seed(seed.temp);
-
+# seed.temp = 1111;
+set.seed(seed.CV);
 # n.ind: index of CV fold
-n.ind = (sample(1:n))[-((CV.fold-1)*n/V+1:(n/V))];
+n.ind = matrix(c(rep(NA,CV.all),sample(1:n)),CV.all)[CV.i,];
+n.ind = n.ind[!is.na(n.ind)]
 # nf: sample size of CV fold
 nf = length(n.ind);
 
@@ -154,7 +114,7 @@ gmhat1 = 0
 
 
 
-test.result.hat = nmarEM.MLE.fun(Ym= Y.obs, Xm=X.temp, Zm=Z.temp, gamma0=gmhat0, gamma1=gmhat1, lambda1=lambda.1, lambda2=lambda.2, lambda3=nu.1, lambda4=nu.2, C.m=C.temp, maxIter=max.iteration, MLE=TRUE,tol=tolerance);  
+test.result.hat = nmarEM.MLE.fun(Ym= Y.obs, Xm=X.temp, Zm=Z.temp, gamma0=gmhat0, gamma1=gmhat1, lambda1=lambda.1, lambda2=lambda.2, lambda3=nu.1, lambda4=nu.2, C.m=C.temp, maxIter=max.teration, MLE=TRUE,tol=tolerance);  
 
 class(test.result.hat)<-"ProMap"
 test.result.hat

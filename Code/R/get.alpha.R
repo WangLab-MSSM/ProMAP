@@ -49,7 +49,7 @@ function(Y, X, Z, R, b, lambda1, lambda2, Cm, alpha0 = NULL)
   lamL1 = lambda1;
   lamL2 = lambda2;
   C.m = Cm;
-  rm.est = remMap(X.m, Y.m,lamL1, lamL2, phi0=alpha0, C.m);
+  rm.est = remMap(X.m, Y.m, lamL1, lamL2, phi0=alpha0, C.m);
   
   ooe = rm.est[[1]];### PxL matrix
   
